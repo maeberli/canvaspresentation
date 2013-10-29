@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<title>Canvas</title>
+<meta charset="UTF-8">
+
+<style type="text/css">
+canvas { border: 1px solid black; }
+</style>
+  
+<script type="text/javascript">
+
+window.onload = initContext;
+
+var canvas = null;
+var c = null;
+
+function initContext() {
+  canvas = document.getElementById( 'myCanvas' );
+  c = canvas.getContext( '2d' );
+}
+</script>
+
+</head>
+<body>
+  <canvas id="myCanvas" width="400" height="200"></canvas>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+	<head>
+	<title>Canvas</title>
+	<meta charset="UTF-8">
+		<style type="text/css">
+			canvas { border: 1px solid black; }
+		</style>
+		<script type="text/javascript">
+
+			window.onload = initContext;
+
+			var canvas = null;
+			var c = null;
+			var showGray = null;
+
+			var grayscale = function (pixels, args) {
+				var d = pixels.data;
+				for (var i = 0; i < d.length; i += 4) {
+					var r = d[i];
+					var g = d[i + 1];
+					var b = d[i + 2];
+					d[i] = d[i + 1] = d[i + 2] = (r+g+b)/3;
+				}
+				return pixels;
+			};
+			
+			function filterCanvas(filter) {	
+				if (canvas.width > 0 && canvas.height > 0)	 {
+					var imageData = c.getImageData(	0, 0, canvas.width, canvas.height);
+					filter(imageData);	
+					c.putImageData(imageData, 0, 0);	
+				}
+			}
+			
+			function colorOrGray() {
+				 if( showGray.checked ) {
+					filterCanvas(grayscale);
+				} else {
+					initScene();
+				}
+			}
+
+			function initContext() {
+				canvas = document.getElementById( 'myCanvas' );
+				c = canvas.getContext( '2d' );
+				
+				showGray = document.getElementById( 'showGray' );
+				showGray.checked = false;
+				showGray.onchange = colorOrGray;
+
+				initScene();
+			}
+			
+			function initScene() {
+				var image = new Image();
+				image.onload = function () {
+					if (image.width != canvas.width)
+						canvas.width = image.width;
+					if (image.height != canvas.height)
+						canvas.height = image.height;
+					c.clearRect(0, 0, canvas.width, canvas.height);
+					c.drawImage(image, 0, 0, canvas.width, canvas.height);
+				}
+				image.src = "./classy-red-pand.jpg";
+			}
+			
+			
+
+		</script>
+	</head>
+	<body>
+		     <canvas id="myCanvas"></canvas>
+			<p> 
+				<input type="checkbox" name="showGray" id="showGray" />Show panda in gray</input><br />
+			</p>
+	</body>
+</html>

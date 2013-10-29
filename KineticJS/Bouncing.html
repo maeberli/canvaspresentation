@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<!-- Original Source: http://www.html5canvastutorials.com/kineticjs/html5-canvas-kineticjs-animate-position-tutorial/" -->
+<html>
+  <head>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.7.2.min.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script defer="defer">
+      var stage = new Kinetic.Stage({
+        container: 'container', width: 400, height: 120
+      });
+      var layerAnim = new Kinetic.Layer();
+
+      var centerX = stage.getWidth() / 2;
+      var centerY = stage.getHeight() / 2;
+      
+      var hexagon = new Kinetic.RegularPolygon({
+        x: centerX, y: centerY,
+        sides: 6, radius: 55, strokeWidth: 6
+      });
+
+      layerAnim.add(hexagon);
+      stage.add(layerAnim);
+      
+      var anim = new Kinetic.Animation(function(frame) {
+        hexagon.setX(90 * Math.sin(frame.time * 2 * Math.PI / 2000) + centerX);
+      }, layerAnim);
+
+      anim.start();
+    </script>
+  </body>
+</html>

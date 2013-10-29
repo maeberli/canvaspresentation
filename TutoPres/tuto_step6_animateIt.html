@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+<title>Canvas</title>
+<meta charset="UTF-8">
+
+<style type="text/css">
+canvas { border: 1px solid black; }
+</style>
+  
+<script type="text/javascript">
+
+window.onload = initContext;
+
+var canvas = null;
+var c = null;
+var step = 0;
+var pA = null; // Begin of the curve 
+var pB = null; // Control point of the curve
+var pC = null; // End of the curve
+
+function Vector(x,y){
+  this.x=x;
+  this.y=y;
+}
+
+function initContext() {
+  canvas = document.getElementById( 'myCanvas' );
+  c = canvas.getContext( '2d' );
+
+  pA = new Vector( 60, 60 );
+  pB = new Vector( 70, 170 );
+  pC = new Vector( 380, 170);
+  
+  initScene();
+
+  // Start animation: call each 500 ms the method draw().
+  return setInterval( draw, 500 );
+}
+
+function initScene() {
+  c.clearRect( 0, 0, canvas.width, canvas.height );
+  
+  drawPoint( pA, "pA" );
+  drawPoint( pB, "pB" );
+  drawPoint( pC, "pC" );
+  
+  drawBezierCurve();
+}
+
+function draw(){
+  // if step is smaller than 10, we draw the next step of the Bézier curve.
+  if( step <= 10 ) {
+    drawBezierStep( pA, pB, pC, 1/10 * step );
+    step += 1;
+  } else {
+    step = 0;
+    initScene();
+  }
+}
+
+function drawBezierStep( pA, pB, pC, t ) {
+  // See following reference for further informations about construction Bézier curves:
+  // http://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves 
+  
+  // Calculate the vector AB and the vector BC
+  var vecAB = new Vector( pB.x-pA.x, pB.y-pA.y );
+  var vecBC = new Vector( pC.x-pB.x, pC.y-pB.y );
+  
+  // Calculate intermediate points
+  var pQ1 = new Vector( pA.x + vecAB.x * t, pA.y + vecAB.y * t );
+  var pQ2 = new Vector( pB.x + vecBC.x * t, pB.y + vecBC.y * t );
+  
+  // Draw the two points between AB and BC
+  c.beginPath();
+  c.arc( pQ1.x, pQ1.y, 2, 0 , Math.PI*2, true );
+  c.arc( pQ2.x, pQ2.y, 2, 0 , Math.PI*2, true );
+  c.fill();
+  
+  // Draw the line between the two varying points
+  c.beginPath();
+  c.moveTo( pQ1.x, pQ1.y );
+  c.lineTo( pQ2.x, pQ2.y );
+  c.stroke();
+  
+  // Calculate the final point on the Bézier curve.
+  var vecQ1Q2 = new Vector( pQ2.x-pQ1.x, pQ2.y-pQ1.y );
+  var pQ = new Vector( pQ1.x + vecQ1Q2.x*t, pQ1.y + vecQ1Q2.y*t );
+  
+  // Draw the final point.
+  c.beginPath();  
+  c.arc( pQ.x, pQ.y, 3, 0, Math.PI*2, true );
+  c.fill();
+}
+
+function drawPoint( point, title ) {
+  var location = "( " + point.x + ", " + point.y + " )";
+  var titleWidth = c.measureText( title );
+  var locationWidth = c.measureText( location );
+  
+  // Set font style for current graphic context.
+  c.font = "12px sans-serif";
+  
+  // Display the title and the location.
+  c.fillText( title, point.x-12-titleWidth.width, point.y + 12 );
+  c.fillText( location , point.x-12-locationWidth.width, point.y + 24 );
+  
+  // Draw a circle at the specific position.
+  c.beginPath();
+  c.arc( point.x, point.y, 5, 0, Math.PI*2, true );
+  c.fill();
+}
+
+function drawBezierCurve() {
+  // save old graphical context style.
+  c.save();
+  
+  // setup style.
+  c.strokeStyle = "#00FF00";
+  c.lineWidth = 3.0;
+  
+  // define path.
+  c.beginPath();
+  c.moveTo( pA.x, pA.y );
+  c.quadraticCurveTo( pB.x, pB.y, pC.x, pC.y );
+  
+  // draw path with a stroke.
+  c.stroke();
+  
+  // restore old graphical context style.
+  c.restore();
+}
+
+</script>
+
+</head>
+<body>
+  <canvas id="myCanvas" width="400" height="200"></canvas>
+</body>
+</html>

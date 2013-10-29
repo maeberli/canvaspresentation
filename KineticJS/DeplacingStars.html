@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<!-- Original Source: http://www.html5canvastutorials.com/kineticjs/html5-canvas-shape-caching-with-kineticjs/" -->
+<html>
+  <head>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.7.2.min.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script defer="defer">
+      var stage = new Kinetic.Stage({
+        container: 'container',
+        width: 400, height: 120
+      });
+
+      var layer = new Kinetic.Layer();
+
+      var instruction = new Kinetic.Text({
+        x: 10,
+        y: 90,
+        text: 'Move the stars...',
+        fontSize: 15,
+        fontFamily: 'Calibri',
+        fill: 'black'
+      });
+      
+      var star = new Kinetic.Star({
+        innerRadius: 10,
+        outerRadius: 25,
+        fill: 'red',
+        stroke: 'black',
+        strokeWidth: 5,
+        numPoints: 5,
+        x: 30,
+        y: 30,
+        draggable: true,
+        shadowOffset: 2,
+        shadowColor: 'black',
+        shadowBlur: 5,
+        shadowOpacity: 0.5
+      });
+      
+      layer.add(star);
+      layer.add(instruction);
+      stage.add(layer);
+
+      star.toImage({
+        width: 60,
+        height: 60,
+        callback: function(img) {
+          for(var n = 0; n < 5; n++) {
+            var image = new Kinetic.Image({
+              image: img,
+              x: Math.random() * stage.getWidth(),
+              y: Math.random() * stage.getHeight(),
+              offset: 30,
+              draggable: true
+            });
+
+            layer.add(image);
+          }
+
+          layer.draw();
+        }
+      });
+
+    </script>
+  </body>
+</html>

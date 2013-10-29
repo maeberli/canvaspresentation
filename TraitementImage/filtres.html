@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+	<head>
+	<title>Canvas</title>
+	<meta charset="UTF-8">
+		<style type="text/css">
+			canvas { border: 1px solid black; }
+		</style>
+		<script type="text/javascript">
+
+			window.onload = initContext;
+
+			var canvas = null;
+			var c = null;
+			var showGray = null;
+			
+			var sliderR = null;
+			var sliderG = null;
+			var sliderB = null;
+			var chanel = null;
+			
+			var oldValueSliderR = 0;
+			var oldValueSliderG = 0;
+			var oldValueSliderB = 0;
+
+			var grayscale = function (pixels, args) {
+				var d = pixels.data;
+				for (var i = 0; i < d.length; i += 4) {
+					var r = d[i];
+					var g = d[i + 1];
+					var b = d[i + 2];
+					d[i] = d[i + 1] = d[i + 2] = (r+g+b)/3;
+				}
+				return pixels;
+			};
+			
+			var shiftChannels = function (pixels, args) {
+				var d = pixels.data;
+				for (var i = 0; i < d.length; i += 4) {
+					var r = d[i];
+					var g = d[i + 1];
+					var b = d[i + 2];
+					switch (chanel) {
+						case 'red':
+							d[i] = r + parseInt( sliderR.value ) - oldValueSliderR;
+							break;
+						case 'green':
+							d[i + 1] = g + parseInt( sliderG.value ) - oldValueSliderG;
+							break;
+						case 'blue':
+							d[i + 2] = b + parseInt( sliderB.value ) - oldValueSliderB;
+							break;
+						default:
+							//no op
+							break;
+					}
+				}
+				oldValueSliderR = parseInt( sliderR.value );
+				oldValueSliderG = parseInt( sliderG.value );
+				oldValueSliderB = parseInt( sliderB.value );
+				return pixels;
+			};
+			
+			function filterCanvas(filter) {	
+				if (canvas.width > 0 && canvas.height > 0)	 {
+					var imageData = c.getImageData(	0, 0, canvas.width, canvas.height);
+					filter(imageData);	
+					c.putImageData(imageData, 0, 0);	
+				}
+			}
+			
+			function colorOrGray() {
+				 if( showGray.checked ) {
+					filterCanvas(grayscale);
+				} else {
+					initScene();
+				}
+			}
+			
+			function shiftR() {
+				chanel = "red";
+				filterCanvas(shiftChannels);
+			}
+			function shiftG() {
+				chanel = "green";
+				filterCanvas(shiftChannels);
+			}
+			function shiftB() {
+				chanel = "blue";
+				filterCanvas(shiftChannels);
+			}
+			
+			
+
+			function initContext() {
+				
+				// 1
+				canvas = document.getElementById( 'myCanvas' );
+				c = canvas.getContext( '2d' );
+				
+				showGray = document.getElementById( 'showGray' );
+				showGray.checked = false;
+				
+				showGray.onchange = colorOrGray;
+				// 1
+				
+				// 2
+				sliderR = document.getElementById( 'rPos' );
+				sliderG = document.getElementById( 'gPos' );
+				sliderB = document.getElementById( 'bPos' );
+				
+				sliderR.value = 0;
+				sliderG.value = 0;
+				sliderB.value = 0;
+				
+				sliderR.onchange = shiftR;
+				sliderG.onchange = shiftG;
+				sliderB.onchange = shiftB;
+				// 2
+				
+				// 1
+				initScene();
+			}
+			
+			// 1
+			function initScene() {
+				var image = new Image();
+				image.onload = function () {
+					if (image.width != canvas.width)
+						canvas.width = image.width;
+					if (image.height != canvas.height)
+						canvas.height = image.height;
+					c.clearRect(0, 0, canvas.width, canvas.height);
+					c.drawImage(image, 0, 0, canvas.width, canvas.height);
+				}
+				image.src = "./classy-red-pand.jpg";
+			}
+			
+			
+
+		</script>
+	</head>
+	<body>
+		     <canvas id="myCanvas"></canvas>
+			<p> 
+				<input type="checkbox" name="showGray" id="showGray" />Show panda in gray</input><br />
+				R : <input type="range"  name="rPos" id="rPos" min="-255" max="255" value="0" /><br />
+				G : <input type="range"  name="gPos" id="gPos" min="-255" max="255" value="0" /><br />
+				B : <input type="range"  name="bPos" id="bPos" min="-255" max="255" value="0" /><br />
+				<button type="button" id="reset"  onclick="initContext();">Reset</button>
+			</p>
+	</body>
+</html>

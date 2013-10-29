@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<!-- Original Source: http://www.html5canvastutorials.com/kineticjs/html5-canvas-set-alpha-with-kineticjs/ -->
+<html>
+  <head>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.7.2.min.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script defer="defer">
+      var stage = new Kinetic.Stage({
+        container: 'container',
+        width: 400, height: 120
+      });
+      var layer = new Kinetic.Layer();
+
+      var instruction = new Kinetic.Text({
+        x: 10,
+        y: 90,
+        text: 'Move mouse over pentagon...',
+        fontSize: 15,
+        fontFamily: 'Calibri',
+        fill: 'black'
+      });
+      
+      var pentagon = new Kinetic.RegularPolygon({
+        x: stage.getWidth() / 2,
+        y: stage.getHeight() / 2,
+        sides: 5,
+        radius: 45,
+        fill: 'red',
+        stroke: 'black',
+        strokeWidth: 4,
+        opacity: 0.5
+      });
+
+      pentagon.on('mouseover', function() {
+        this.setOpacity(1);
+        layer.draw();
+      });
+
+      pentagon.on('mouseout', function() {
+        this.setOpacity(0.5);
+        layer.draw();
+      });
+      
+      layer.add(pentagon);
+      layer.add(instruction);
+
+      stage.add(layer);
+    </script>
+  </body>
+</html>
